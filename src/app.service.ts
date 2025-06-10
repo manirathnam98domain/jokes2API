@@ -5,7 +5,6 @@ export class AppService {
   getHello(): any {
     const randomNumber = Math.floor(Math.random() * 100);
     const jokesRandom = jokes[randomNumber];
-
     try {
       return jokesRandom;
     } catch (err) {
