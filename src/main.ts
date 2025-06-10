@@ -1,8 +1,29 @@
+// import { NestFactory } from '@nestjs/core';
+// import { AppModule } from './app.module';
+
+// async function bootstrap() {
+//   const app = await NestFactory.create(AppModule);
+//   await app.listen(process.env.PORT ?? 3000);
+// }
+// bootstrap();
+
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import serverless = require('serverless-http');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const globalPrefix = '.netlify/functions/main';
+  app.setGlobalPrefix(globalPrefix);
+  await app.init();
+
+  const expressApp = app.getHttpAdapter().getInstance();
+  return serverless(expressApp)
 }
-bootstrap();
+
+let server;
+export const handler = async (event, context, callback) => {
+  server = server ?? (await bootstrap());
+  return server(event, context, callback);
+};
